@@ -4,6 +4,8 @@ Docker image for a light NFS client (~10.9MB). By default NFS 4 is used.
 
 Based on https://github.com/evq/nfs-client.
 
+Modified further to run as a RancherOS system service.
+
 ## Usage
 
 ### Build

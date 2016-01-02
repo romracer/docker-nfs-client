@@ -21,11 +21,11 @@ rancher:
       # log_driver: json-file
 
       # Your custom image
-      image: flaccid/nfs-client
+      image: quantverse/docker-nfs-client
 
       # Everything below is required to be set so that Docker can run properly
       labels:
-        io.rancher.os.after: console
+        io.rancher.os.after: console,,wait-for-network
         io.rancher.os.scope: system
       net: host
       pid: host
