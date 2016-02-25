@@ -1,8 +1,8 @@
 # docker-nfs-client
 
-Docker image for a light NFS client (~10.9MB). By default NFS 4 is used.
+Docker image for a light NFS client (~14.5MB). By default NFS 4 is used.
 
-Based on https://github.com/evq/nfs-client.
+Based on https://github.com/quantverse/docker-nfs-client.
 
 Modified further to run as a RancherOS system service.
 
@@ -37,16 +37,9 @@ $ docker run -itd \
       nfs-client
 ```
 
-### Tag and Push
+### RancherOS Service
 
-    $ docker tag -f nfs-client flaccid/nfs-client
-    $ docker push flaccid/nfs-client
-
-## Caveat
-
-Currently isn't very useful beyond being the basis for other containers,
-[internally mounted nfs volumes can't be shared to other
-containers.](https://github.com/docker/docker/issues/4213)
+See the rancheros-service.yml file for an example.
 
 
 License and Authors
