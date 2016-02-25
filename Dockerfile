@@ -16,7 +16,7 @@ MAINTAINER Ryan Schlesinger <ryan@outstand.com>
 #             -e SERVER=192.168.0.9 \
 #             -e SHARE=movies \
 #             -e MOUNT_OPTIONS="nfsvers=3,ro" \
-#             -e FSTYPE=nfs3 \
+#             -e FSTYPE=nfs \
 #             -e MOUNTPOINT=/mnt/host/mnt/nfs-1 \
 #                nfs-client
 
@@ -40,9 +40,6 @@ ENV MOUNTPOINT /mnt/nfs-1
 
 RUN apk update && apk add --update nfs-utils && rm -rf /var/cache/apk/*
 RUN rm /sbin/halt /sbin/poweroff /sbin/reboot
-
-# would only be used if extending an running a different main process in fg
-# RUN rc-update add nfs
 
 ADD entry.sh /usr/local/bin/entry.sh
 
