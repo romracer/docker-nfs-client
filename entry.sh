@@ -1,6 +1,5 @@
-#! /bin/sh -e
-
-#set -m
+#!/bin/dumb-init /bin/sh
+set -e
 
 mkdir -p "$MOUNTPOINT"
 
