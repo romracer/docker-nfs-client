@@ -17,7 +17,7 @@ MAINTAINER Ryan Schlesinger <ryan@outstand.com>
 #             -e SHARE=movies \
 #             -e MOUNT_OPTIONS="nfsvers=3,ro" \
 #             -e FSTYPE=nfs \
-#             -e MOUNTPOINT=/mnt/host/mnt/nfs-1 \
+#             -e MOUNTPOINT=/mnt/host \
 #                nfs-client
 
 
@@ -42,5 +42,8 @@ RUN apk update && apk add --update nfs-utils && rm -rf /var/cache/apk/*
 RUN rm /sbin/halt /sbin/poweroff /sbin/reboot
 
 ADD entry.sh /usr/local/bin/entry.sh
+
+HEALTHCHECK --interval=1s --timeout=5s \
+    CMD mountpoint -q $MOUNTPOINT || exit 1
 
 ENTRYPOINT ["/usr/local/bin/entry.sh"]
