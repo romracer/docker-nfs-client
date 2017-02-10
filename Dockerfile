@@ -1,4 +1,4 @@
-FROM alpine:3.3
+FROM alpine:3.5
 MAINTAINER Ryan Schlesinger <ryan@outstand.com>
 
 # USAGE
@@ -20,30 +20,30 @@ MAINTAINER Ryan Schlesinger <ryan@outstand.com>
 #             -e MOUNTPOINT=/mnt/host \
 #                nfs-client
 
+ENV DUMB_INIT_VERSION 1.2.0
 
-# This is the release of https://github.com/hashicorp/docker-base to pull in order
-# to provide HashiCorp-built versions of basic utilities like dumb-init and gosu.
-ENV DOCKER_BASE_VERSION=0.0.4
-ENV DOCKER_BASE_SHA256SUM=5262aa8379782d42f58afbda5af884b323ff0b08a042e7915eb1648891a8da00
-
-# Set up certificates and our base tools.
-RUN apk add --no-cache ca-certificates && \
+RUN apk add --no-cache curl ca-certificates && \
+    mkdir -p /tmp/build && \
+    cd /tmp/build && \
+    curl -O -L https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_amd64 && \
+    curl -O -L https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/sha256sums && \
+    grep dumb-init_${DUMB_INIT_VERSION}_amd64$ sha256sums | sha256sum -c && \
+    chmod +x dumb-init_${DUMB_INIT_VERSION}_amd64 && \
+    cp dumb-init_${DUMB_INIT_VERSION}_amd64 /bin/dumb-init && \
+    ln -s /bin/dumb-init /usr/bin/dumb-init && \
     cd /tmp && \
-    wget -O docker-base.zip https://releases.hashicorp.com/docker-base/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_linux_amd64.zip && \
-    echo "${DOCKER_BASE_SHA256SUM}  docker-base.zip" | sha256sum -c && \
-    unzip -d / docker-base.zip && \
-    rm docker-base.zip
+    rm -rf /tmp/build && \
+    apk del curl
 
 ENV FSTYPE nfs4
 ENV MOUNT_OPTIONS nfsvers=4
 ENV MOUNTPOINT /mnt/nfs-1
 
-RUN apk update && apk add --update nfs-utils && rm -rf /var/cache/apk/*
-RUN rm /sbin/halt /sbin/poweroff /sbin/reboot
-
-ADD entry.sh /usr/local/bin/entry.sh
+RUN apk add --no-cache --update nfs-utils && \
+    rm /sbin/halt /sbin/poweroff /sbin/reboot
 
 HEALTHCHECK --interval=1s --timeout=5s \
     CMD mountpoint -q $MOUNTPOINT || exit 1
 
-ENTRYPOINT ["/usr/local/bin/entry.sh"]
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"]
