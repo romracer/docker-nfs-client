@@ -7,14 +7,15 @@ umount_nfs () {
   exit
 }
 
-echo "Mounting nfs..."
-
 mkdir -p "$MOUNTPOINT"
 rpc.statd -F -p 32765 -o 32766 &
 rpcbind -f &
-mount -t "$FSTYPE" -o "$MOUNT_OPTIONS" "$SERVER:$SHARE" "$MOUNTPOINT"
-mount | grep nfs
 
-trap umount_nfs SIGHUP SIGINT SIGTERM
+if [ ! -z $SERVER ]; then
+  echo "Mounting nfs..."
+  mount -t "$FSTYPE" -o "$MOUNT_OPTIONS" "$SERVER:$SHARE" "$MOUNTPOINT"
+  mount | grep nfs
+  trap umount_nfs SIGHUP SIGINT SIGTERM
+fi
 
 while true; do sleep 1000; done
